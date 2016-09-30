@@ -7,7 +7,7 @@ title: 康兴华
 subtitle:
 description:
 author: 康兴华
-language:
+language: zh-CN
 timezone:
 
 # URL
@@ -68,4 +68,6 @@ theme: pln
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type:
+  type: git
+  repo: https://github.com/kangxinghua/kangxinghua.github.io.git
+  branch: master
