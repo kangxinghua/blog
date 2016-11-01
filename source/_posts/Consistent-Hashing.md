@@ -19,10 +19,10 @@ tags: 笔记
 算法的核心计算如下
 
 ``` java
-mport java.util.Arrays;
+import java.util.Arrays;
 import java.util.Collections;
 
-import static org.mycommon.hash.Utils.hash;
+import static com.kxh.hash.Utils.hash;
 
 /**
  * Created by KangXinghua on 2016/10/26.
@@ -50,17 +50,18 @@ public class NormalHash {
         System.out.printf("Max: %d\t(%.2f%%)%n", _max, (_max - _ave) * 100.0 / _ave);
         System.out.printf("Min: %d\t(%.2f%%)%n", _min, (_ave - _min) * 100.0 / _ave);
     }
+}
 ```
 
 > Ave: 100000
-> Max: 100406 
-> Min: 99530  (0.47%)
+> Max: 100653   (0.65%)
+> Min: 99160    (0.84%)
 
 从上述结果可以发现，普通的Hash算法均匀地将这些数据项打散到了这些节点上，并且分布最少和最多的存储节点数据项数目小于1%。之所以分布均匀，主要是依赖Hash算法能够比较随机的分布。
 
 然而，我们看看存在一个问题，由于该算法使用节点数取余的方法，强依赖node的数目，因此，当是node数发生变化的时候，item所对应的node发生剧烈变化，而发生变化的成本就是我们需要在node数发生变化的时候，数据需要迁移，这对存储产品来说显然是不能忍的，我们观察一下增加node后，数据项移动的情况：
 ``` java
-import static org.mycommon.hash.Utils.hash;
+import static com.kxh.hash.Utils.hash;
 
 /**
  * Created by KangXinghua on 2016/10/26.
@@ -90,7 +91,7 @@ public class NormalHashAdd {
 }
 ```
 
-Change: 9901660 (99.02%)
+> Change: 9900492   (99.00%)
 
 翻译一下就是，**如果有100个item，当增加一个node，之前99%的数据都需要重新移动。**  
 
@@ -162,13 +163,14 @@ public class ConsistHashAdd {
 ```
 
 我们依然对其进行了实现ConsistHashAdd.java，并且观察了数据迁移的结果：
-> Change: 65719 (0.66%)
+> Change: 6379941   (63.80%)
 
 虽然一致性Hash算法解决了节点变化导致的数据迁移问题，但是，我们回过头来再看看数据项分布的均匀性，进行了一致性Hash算法的实现ConsistHash.java：
 ``` java
-iimport java.util.*;
+import java.util.*;
 
-import static org.mycommon.hash.Utils.hash;
+import static com.kxh.hash.Utils.bisectLeft;
+import static com.kxh.hash.Utils.hash;
 
 /**
  * Created by KangXinghua on 2016/10/27.
@@ -205,17 +207,11 @@ public class ConsistHash {
         System.out.printf("Max: %d\t(%.2f%%)%n", _max, (_max - _ave) * 100.0 / _ave);
         System.out.printf("Min: %d\t(%.2f%%)%n", _min, (_ave - _min) * 100.0 / _ave);
     }
-
-    public static int bisectLeft(List<Integer> list, Integer key) {
-        int idx = Math.min(list.size(), Math.abs(Collections.binarySearch(list, key)));
-        while (idx > 0 && list.get(idx - 1) >= key) idx--;
-        return idx;
-    }
 }
 ```
 Ave: 100000
-Max: 9999401    (9899.40%)
-Min: 1  (100.00%)
+Max: 636147 (536.15%)
+Min: 2423   (97.58%)
 
 这结果简直是简直了，确实非常结果差，分配的很不均匀。我们思考一下，一致性哈希算法分布不均匀的原因是什么？从最初的1000w个数据项经过一般的哈希算法的模拟来看，这些数据项“打散”后，是可以比较均匀分布的。但是引入一致性哈希算法后，为什么就不均匀呢？数据项本身的哈希值并未发生变化，变化的是判断数据项哈希应该落到哪个节点的算法变了。 
 
@@ -233,7 +229,8 @@ Min: 1  (100.00%)
 ``` java
 import java.util.*;
 
-import static org.mycommon.hash.Utils.hash;
+import static com.kxh.hash.Utils.bisectLeft;
+import static com.kxh.hash.Utils.hash;
 
 /**
  * Created by KangXinghua on 2016/10/30.
@@ -274,20 +271,13 @@ public class VirtualConsistHash {
         System.out.printf("Max: %d\t(%.2f%%)%n", _max, (_max - _ave) * 100.0 / _ave);
         System.out.printf("Min: %d\t(%.2f%%)%n", _min, (_ave - _min) * 100.0 / _ave);
     }
-
-    public static int bisectLeft(List<Integer> list, Integer key) {
-        int idx = Math.min(list.size(), Math.abs(Collections.binarySearch(list, key)));
-        while (idx > 0 && list.get(idx - 1) >= key) idx--;
-        return idx;
-    }
-
 }
 
 ```
 输出结果是这样的：
 > Ave: 100000
-> Max: 1332530    (1232.53%)
-> Min: 300    (99.70%)
+> Max: 117707   (17.71%)
+> Min: 9213 (90.79%)
 
 因此，通过增加虚节点的方法，使得每个节点在环上所“管辖”更加均匀。这样就既保证了在节点变化时，尽可能小的影响数据分布的变化，而同时又保证了数据分布的均匀。也就是靠增加“节点数量”加强管辖区间的均匀。
 同时，观察增加节点后数据变动情况，详细的代码请见VirtualConsistHashAdd.java：
@@ -295,7 +285,8 @@ public class VirtualConsistHash {
 ``` java
 import java.util.*;
 
-import static org.mycommon.hash.Utils.hash;
+import static com.kxh.hash.Utils.bisectLeft;
+import static com.kxh.hash.Utils.hash;
 
 /**
  * Created by KangXinghua on 2016/10/30.
@@ -343,17 +334,9 @@ public class VirtualConsistHashAdd {
         }
         System.out.printf("Change: %d\t(%.2f%%)%n", change, change * 100.0 / ITEMS);
     }
-
-    public static int bisectLeft(List<Integer> list, Integer key) {
-        int idx = Math.min(list.size(), Math.abs(Collections.binarySearch(list, key)));
-        while (idx > 0 && list.get(idx - 1) >= key) {
-            idx--;
-        }
-        return idx;
-    }
 }
 ```
-> Change: 17120 (0.17%)
+> Change: 107545    (1.08%)
 
 ## 另一种改进
 然而，虚节点这种靠数量取胜的策略增加了存储这些虚节点信息所需要的空间。在OpenStack的Swift组件中，使用了一种比较特殊的方法来解决分布不均的问题，改进了这些数据分布的算法，将环上的空间均匀的映射到一个线性空间，这样，就保证分布的均匀性。
@@ -365,7 +348,8 @@ public class VirtualConsistHashAdd {
 ``` java
 import java.util.*;
 
-import static org.mycommon.hash.Utils.hash;
+import static com.kxh.hash.Utils.bisectLeft;
+import static com.kxh.hash.Utils.hash;
 
 /**
  * Created by KangXinghua on 2016/10/27.
@@ -376,7 +360,7 @@ public class PartConsistHash {
         Integer ITEMS = 10000000;
         Integer NODES = 100;
         Integer LOG_NODE = 7;
-        Integer MAX_POWER = 32;
+        Integer MAX_POWER = 31;//这个值与原文不一样。如果是32的话有大部分的节点无法命中
         Integer PARTITION = MAX_POWER - LOG_NODE;
         Integer[] node_stat = new Integer[NODES];
 
@@ -407,24 +391,19 @@ public class PartConsistHash {
         System.out.printf("Max: %d\t(%.2f%%)%n", _max, (_max - _ave) * 100.0 / _ave);
         System.out.printf("Min: %d\t(%.2f%%)%n", _min, (_ave - _min) * 100.0 / _ave);
     }
-
-    public static int bisectLeft(List<Integer> list, Integer key) {
-        int idx = Math.min(list.size(), Math.abs(Collections.binarySearch(list, key)));
-        while (idx > 0 && list.get(idx - 1) >= key) idx--;
-        return idx;
-    }
 }
 ```
 
 > Ave: 100000
-> Max: 172000 (72.00%)
-> Min: 0  (100.00%)
+> Max: 157292   (57.29%)
+> Min: 77343    (22.66%)
 
 可以看到，数据分布是比较理想的。如果节点数刚好和分区数相等，理论上是可以均匀分布的。而观察下增加节点后的数据移动比例，代码实现见PartConsistHashAdd.java:
 ``` java
 import java.util.*;
 
-import static org.mycommon.hash.Utils.hash;
+import static com.kxh.hash.Utils.bisectLeft;
+import static com.kxh.hash.Utils.hash;
 
 /**
  * Created by KangXinghua on 2016/10/27.
@@ -436,21 +415,16 @@ public class PartConsistHashAdd {
         Integer NODES = 100;
         Integer NEW_NODES = 101;
         Integer LOG_NODE = 7;
-        Integer MAX_POWER = 32;
+        Integer MAX_POWER = 31;//这个值与原文不一样。如果是32的话有大部分的节点无法命中
         Integer PARTITION = MAX_POWER - LOG_NODE;
 
         List<Integer> ring = new ArrayList<>();
-        List<Integer> new_ring = new ArrayList<>();
         Map<Integer, Integer> part2node = new HashMap<>();
         Map<Integer, Integer> new_part2node = new HashMap<>();
 
         for (int i = 0; i < Math.pow(2, LOG_NODE); i++) {
             ring.add(i);
             part2node.put(i, i % NODES);
-        }
-
-        for (int i = 0; i < Math.pow(2, LOG_NODE); i++) {
-            new_ring.add(i);
             new_part2node.put(i, i % NEW_NODES);
         }
 
@@ -458,26 +432,65 @@ public class PartConsistHashAdd {
         for (Integer i = 0; i < ITEMS; i++) {
             int h = hash(i.toString()) >> PARTITION;
             int p = bisectLeft(ring, h);
-            int p2 = bisectLeft(new_ring, h);
-
             int n = part2node.get(p) % NODES;
-            int n_new = new_part2node.get(p2) % NEW_NODES;
-
+            int n_new = new_part2node.get(p) % NEW_NODES;
             if (n_new != n)
                 change += 1;
         }
 
         System.out.printf("Change: %d\t(%.2f%%)%n", change, change * 100.0 / ITEMS);
     }
+}
+```
+结果如下所示：
+> Change: 2185667   (21.86%)
+
+可以看到，移动也是比较理想的。
+
+## hash和 bisectLeft 代码
+
+``` java
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * Created by KangXinghua on 2016/10/30.
+ */
+public class Utils {
+    public static int hash(String str) {
+        final int p = 16777619;
+        int hash = (int) 2166136261L;
+        for (int i = 0; i < str.length(); i++)
+            hash = (hash ^ str.charAt(i)) * p;
+        hash += hash << 13;
+        hash ^= hash >> 7;
+        hash += hash << 3;
+        hash ^= hash >> 17;
+        hash += hash << 5;
+
+        // 如果算出来的值为负数则取其绝对值
+        if (hash < 0)
+            hash = Math.abs(hash);
+        return hash;
+    }
 
     public static int bisectLeft(List<Integer> list, Integer key) {
         int idx = Math.min(list.size(), Math.abs(Collections.binarySearch(list, key)));
-        while (idx > 0 && list.get(idx - 1) >= key) idx--;
+        while (idx > 0 && list.get(idx - 1) >= key) {
+            idx--;
+        }
         return idx;
     }
 }
 ```
-结果如下所示：
-> Change: 0 (0.00%)  
 
-可以看到，移动也是比较理想的。
+##  写在最后
+代码的结果值和原文的不一样的主要原因是hash算法的不一样，原文的hash 是：
+``` python
+def _hash(value):
+    k = md5(str(value)).digest() 
+    ha = unpack_from(">I", k)[0]  
+    return ha
+```
+
+我能力有限，没能翻译过来。
