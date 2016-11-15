@@ -3,7 +3,6 @@ title: 从ACID到CAP到BASE
 date: 2016-10-27 23:05:35
 tags: 笔记
 ---
-> 转载 [从ACID到CAP到BASE](https://segmentfault.com/a/1190000004468442)
 # 序
 本文主要讲述分布式系统开发的一些相关理论基础。
 
@@ -97,4 +96,6 @@ Basically Available（基本可用）、Soft state（软状态）、Eventually c
 - **单调读一致性(Monotonic read consistency)**如果一个进程从系统中读取出一个数据项的某个值后，那么系统对于该进程后续的任何数据访问都不应该返回更旧的值。
 - **单调写一致性(Monotoic write consistency)**一个系统需要保证来自同一个进程的写操作被顺序执行。
 
-BASE定理是提出通过牺牲一致性来获得可用性，并允许数据在一段时间内是不一致的，但最终达到一致状态。
+BASE定理是提出通过牺牲一致性来获得可用性，并允许数据在一段时间内是不一致的，但最终达到一致状态。  
+
+> 转载 [从ACID到CAP到BASE](https://segmentfault.com/a/1190000004468442)
