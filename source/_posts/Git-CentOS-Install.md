@@ -18,7 +18,7 @@ yum install libcurl-devel
 yum install autoconf
 yum install perl-ExtUtils-Embed
 ```
-
+<!-- more -->
 ## 下载最新的git包 
 在 https://github.com/git/git/releases 找到你需要的源码包,我现在最新的是2.10.2版本
 ``` shell
