@@ -2,6 +2,5 @@
 	path = themes/pln
 	url = https://github.com/kangxinghua/hexo-theme-pln.git
 [submodule "themes/yelee"]
-	path = themes/yelee
-	
+	path = themes/yelee	
 	url = https://github.com/kangxinghua/hexo-theme-yelee.git
