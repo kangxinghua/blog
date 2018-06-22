@@ -6,6 +6,8 @@ tags: 笔记
 
 在Java中，开启一个线程的唯一方式是，通过Thread的start方法，并且在线程中执行的Runnable的run方法。无论是线程池还是接下来要介绍的Callable，Future还是线程池，最核心最根本的还是调用的Thread.start()->Runnable.run(),其他的类的出现可以认为是更方便的使用Thread和Runnable，以此为核心更容易理解Java的并发框架。
 
+<!-- more -->
+
 虽然Thread和Runnable类使得多线程编程简单直接，但是有一个缺陷就是：在执行完任务之后无法获得执行结果。如果需要获得执行结果，就必须通过共享变量或者使用线程通信的方式来达到效果，这样使用起来就比较麻烦。因此从JDK1.5开始，有了一系列的类的出现来解决这些问题，如Callable和Future，FutureTask以及线程池《[从使用到原理学习Java线程池](/2018/05/04/ThreadPoolPrinciple/)》。
 
 而自从Java 1.5开始，就是提供Callable和Future以及FutureTask，通过它们可以在任务执行完毕之后得到任务执行结果。
