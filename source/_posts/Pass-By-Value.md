@@ -10,7 +10,7 @@ tags: 笔记
 int num = 10;
 String str = "hello";
 ``` 
-![alt](166032bc90958c21604110441ad03f45_r.jpg)  
+![](166032bc90958c21604110441ad03f45_r.jpg)  
 如图所示，num是基本类型，值就直接保存在变量中。而str是引用类型，变量中保持的只是实际对象的地址。一般称这种变量为“引用”，引用指向实际对象，实际对象中保存着内容。
 
 - 搞清楚赋值运算符（=）的作用  
@@ -18,7 +18,7 @@ String str = "hello";
 num = 20;
 str = "java";
 ```
-![alt](287c0efbb179638cf4cf27cbfdf3e746_b.jpg) 
+![](287c0efbb179638cf4cf27cbfdf3e746_b.jpg) 
 
 对于基础类型num，赋值运算符会直接改变变量的值，原来的值被覆盖掉。
 对于引用类型str，赋值运算符会改变引用中所保存的地址，原来的地址被覆盖掉。**但是原来的对象不会被改变（重要）。**  
@@ -54,19 +54,19 @@ foo(sb);//sb 没有被改变，还是“iphone”。
 
 重点理解为什么，第三个例子和第四例子结果不同？
 下面是第三个例子的图解：
-![alt](d8b82e07ea21375ca6b300f9162aa95f_b.jpg)
+![](d8b82e07ea21375ca6b300f9162aa95f_b.jpg)
 
 builder.append("4")之后
 
-![alt](ff2ede9c6c55568d42425561f25a0fd7_b.jpg)
+![](ff2ede9c6c55568d42425561f25a0fd7_b.jpg)
 
 下面是第四个例子的图解：
 
-![alt](d8b82e07ea21375ca6b300f9162aa95f_b.jpg)
+![](d8b82e07ea21375ca6b300f9162aa95f_b.jpg)
 
 builder = new StringBuilder("ipad");之后
 
-![alt](46fa5f10cc135a3ca087dae35a5211bd_b.jpg) 
+![](46fa5f10cc135a3ca087dae35a5211bd_b.jpg) 
 
 
 2017-02-15 11:09:20 康兴华

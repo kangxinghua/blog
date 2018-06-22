@@ -1,6 +1,6 @@
 ---
 title: 从使用到原理学习Java线程池
-date: 2018-03-19 14：38：55
+date: 2018-05-04 14:38:55
 tags: 笔记
 ---
 **线程池技术背景**
@@ -18,7 +18,7 @@ tags: 笔记
 线程池框架Executor
 Java中的线程池是通过Executor框架实现的，Executor框架包括类：Executor、Executors、ExecutorService、ThreadPoolExecutor、Callable和Future、FutureTask的使用等。
 
-![alt](20180319153538.jpg)  
+![](20180319153538.jpg)  
 
 **Executor：**所有线程池的接口，只有一个方法。
 ``` java
@@ -120,7 +120,7 @@ public <T> Future<T> submit(Callable<T> task) {
 
 1. ***线程复用过程***
     理解线程复用原理首先应了解线程的生命周期。
-    ![alt](006tKfTcjw1f78hxvv1kmj30nm09c75z.jpg)  
+    ![](006tKfTcjw1f78hxvv1kmj30nm09c75z.jpg)  
     在线程的生命周期中，它要经过新建(New)、就绪(Runnable)、运行(Running)、阻塞(Bloched)和死亡(Dead)5种状态。
 
     Thread通过new来新建一个线程，这个过程是初始化一些线程信息，如线程名，id，线程所属group等，可以认为只是个普通的对象。调用Thread的start()后Java虚拟机会为其创建调用栈和程序计数器，同时将hasBeenStarted为true，之后调用start方法就会有异常。
@@ -231,7 +231,7 @@ public <T> Future<T> submit(Callable<T> task) {
     虽然每个Worker的任务都是串行处理的，但是如果创建多个Worker，因为是公用一个workQueue，所以就会并行处理了。
 
     所以根据corePoolSize和maximumPoolSize来控制最大并发数。大致过程可用下图表示。
-    ![alt](006tKfTcgw1f79ope94y3j30nm0egdif.jpg)
+    ![](006tKfTcgw1f79ope94y3j30nm0egdif.jpg)
     上面的讲解和图可以很好的理解的这个过程。
 
     如果是做Android开发的，并且对Handler原理比较熟悉，你可能会觉得这个图挺熟悉，其中的一些过程和Handler，Looper，Meaasge使用中，很相似。Handle。send(Message)相当于execute(Runnable)，Looper中维护的Message队列相当于BlockingQueue，只不过需要自己通过同步来维护这个队列，Looper中的loop()函数循环从Message队列取Message和Worker中的runWork()不断从BlockingQueue取Runnable是同一的道理。
