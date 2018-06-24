@@ -9,6 +9,8 @@ synchronized是不错，但它并不完美。它有一些功能性的限制，�
 
 而Lock的一些实现类则很好的解决了这些问题。
 
+<!-- more -->
+
 ## 可重入锁 ReentrantLock
 
 java.util.concurrent.lock中的Lock框架是锁定的一个抽象，它允许把锁定的实现所为Java类，而不是作为语言的特性来实现。这就为Lock的多种实现留下了空间，各种实现可能不同的调度算法、性能特性或者锁定语义。
