@@ -3,14 +3,14 @@ title: 从使用到原理学习Java线程池
 date: 2018-05-04 14:38:55
 tags: 笔记
 ---
-**线程池技术背景**
+## 线程池技术背景
 在面向对象编程中，创建和销毁对象都是很费时间的，因为创建一个对象要获取内存资源或者其他更多资源。在Java中更是如此，虚拟机将试图跟踪每一个对象，以便能够在对象销毁后进行垃圾回收。
 <!-- more -->
 所以提高服务程序效率的一个手段就是尽可能减少创建和销毁对象的次数，特别是一些很耗资源的对象创建和销毁。如何利用已有对象来服务就是一个需要解决的关键问题，其实这就是一些“池化资源”技术产生的原因。
 
 例如Android中常见到的很多通用组件一般都离不开“池”的概念，如各种图片加载库，网络请求库，即使Android的消息传递机制的Message当使用Message.obtain()就是使用Message池中的对象，因为此这个概念很重要。本文将介绍的线程池技术同样符合这一思想。
 
-**线程池的优点：**
+## 线程池的优点
 1. 重用线程池中的线程，减少因对象创建、销毁所带来的性能开销；
 2. 能有效的控制线程的最大并发数，提高系统资源利用率，同时避免过多的资源竞争，避免堵塞；
 3. 能够线程进行简单的管理，使线程的使用简单、高效；
@@ -51,7 +51,7 @@ public ThreadPoolExecutor(int corePoolSize,int maximumPoolSize,long keepAliveTim
 当一个线程完成任务时，它会从队列中取下一个任务和来执行。
 当一个线程无事可做，超过一定的时间（keepAliveTime）时，线程池会判断，如果当前运行的线程数大于corePoolSize,那么这个线程就停掉。所以线程池的所有任务完成后，它最终会收缩到corePoolSize的大小。
 
-**线程的创建和使用**
+## 线程的创建和使用
 生成线程池采用工具类Executors的静态方法，以下是几种常见的线程池。
 *SingleThreadExecutor：*单个后台线程（其缓冲队列是无界的）
 ``` java
@@ -110,7 +110,7 @@ public <T> Future<T> submit(Callable<T> task) {
 ```
 可以看出submit开启的是有返回结果的任务，会返回一个FutureTask对像，这样就能通过get()方法得到结果。submit最终调用的也是execute(Runnable runnable),submit只是将Callable对象或Runnable封装成一个FutureFask对象，因为FutureTask是个Runnable，所以可以在execute中执行。关于Callable对象和Runnable怎么封装成FutureTask对象，见[Callable和Future、FutureTask的使用。](http://www.silencedut.com/2016/06/15/Callable%E5%92%8CFuture%E3%80%81FutureTask%E7%9A%84%E4%BD%BF%E7%94%A8/)
 
-**线程池实现原理**
+## 线程池实现原理
 如果只讲线程池的使用，那么招聘博客没有什么大的价值,充其量也就是熟悉Executor相关API的过程。程序池的实现过程没有用到synchronized关键字，用的都是volatile,Lock和同步(阻塞)队列，Atomic相关类，FutureTask等等，因为后者性能更优。理解的过程可以很好的学习源码中并发控制思想。
 
 在开篇提到过线程池的优点是可以总结为一下三点：
@@ -272,7 +272,7 @@ public <T> Future<T> submit(Callable<T> task) {
     
     shutdown这个方法会将runState置为SHUNDOWN，会终止所有的空闲线程，而仍在工作的线程不受影响。所以队列中的任务人会被执行。shutdownNow方法runState置为STOP。和shutdown方法的区别，这个方法会终止所有的线程，所以队列中的任务也不会被执行了。
 
-**总结**
+## 总结
 
 通过对ThreadPoolExecutor源码的分析，从总体上了解了线程的创建，任务的添加，执行等过程，熟悉这些过程，使用线程池就会更新松了。
 而从中学到的一些对并发控制，以及生产者--消费者模型任务处理器的使用，对以后理解或解决其他相关问题会有很大的帮助。比如Android中的Handler机制，而Looper中的Messager队列用一个BlookQueue来处理同样是可以的，这些就是读源码的收获吧
