@@ -229,7 +229,7 @@ HashIterator() {
 }
 ```
 
-在HashMap的迭代器执行的过程中，代码会判断modCount和expectedModCount的值，如果不相等则表示HashMap的其他线程修改。
+在HashMap的迭代器执行的过程中,代码会判断modCount和expectedModCount的值,如果不相等则表示HashMap的其他线程修改.
 
 ``` java
 public final boolean hasNext() {
@@ -253,11 +253,11 @@ final Entry<K,V> nextEntry() {
 ```
 ## Hash冲突以及如何解决hash冲突
 
-**疑问：如果两个key通过hash % Entry[].length得到的index相同，会不会有覆盖的危险？**
+**疑问：如果两个key通过hash % Entry[].length得到的index相同,会不会有覆盖的危险？**
 
-这里 HashMap里面用到链式数据结构的一个概念.上面我们提到过 Entry 类里面有一个 next属性,作用是指向下一个 Entry。打个比方, 第一个键值对A进来,通过计算其 key的 hash得到的 index=0， 记做: *Entry[0] = A.*一会后又进来一个键值对B,通过计算其 index也等于0,现在怎么办？ HashMap会这样做 :*B.next = A,Entry[0] = B,*如果又进来C,index也等于0,那么C.next = B,Entry[0] = C；这样我们发现index=0的地方其实存取了A,B,C三个键值对,他们通过next这个属性链接在一起。所以疑问不用担心。
+这里 HashMap里面用到链式数据结构的一个概念.上面我们提到过 Entry 类里面有一个 next属性,作用是指向下一个 Entry.打个比方, 第一个键值对A进来,通过计算其 key的 hash得到的 index=0, 记做: *Entry[0] = A.*一会后又进来一个键值对B,通过计算其 index也等于0,现在怎么办？ HashMap会这样做 :*B.next = A,Entry[0] = B,*如果又进来C,index也等于0,那么C.next = B,Entry[0] = C；这样我们发现index=0的地方其实存取了A,B,C三个键值对,他们通过next这个属性链接在一起.所以疑问不用担心.
 
-当然HashMap里面也包含一些优化方面的实现，这里也啰嗦一下。 比如：Entry[]的长度一定后，随着map里面数据的越来越长，这样同一个index的链就会很长，会不会影响性能？HashMap里面设置一个因素（也称为因子），随着map的size越来越大，Entry[]会以一定的规则加长长度。
+当然HashMap里面也包含一些优化方面的实现,这里也啰嗦一下. 比如：Entry[]的长度一定后,随着map里面数据的越来越长,这样同一个index的链就会很长,会不会影响性能？HashMap里面设置一个因素（也称为因子）,随着map的size越来越大,Entry[]会以一定的规则加长长度.
 
 ## hash冲突解决办法
 
@@ -269,10 +269,10 @@ public V put(K key, V value) {
     int i = indexFor(hash, table.length);  
     for (Entry<K,V> e = table[i]; e != null; e = e.next) {  
         Object k;  
-        //判断当前确定的索引位置是否存在相同hashcode和相同key的元素，如果存在相同的hash值和相同的key的元素，那么新值覆盖原来的旧值，并返回旧值。  
-        //如果存在相同的hash值，那么他们确定的索引位置就相同，这时判断他们的key是否相同，如果不相同，这时就是产生了我们常说的hash冲突。  
-        //Hash冲突后，那么HashMap的单个bucket里存储的不是一个 Entry，而是一个 Entry 链。  
-        //系统只能必须按顺序遍历每个Entry，直到找到想搜索的 Entry 为止——如果恰好要搜索的Entry位于该Entry链的最末端（该 Entry 是最早放入该 bucket 中） 
+        //判断当前确定的索引位置是否存在相同hashcode和相同key的元素,如果存在相同的hash值和相同的key的元素,那么新值覆盖原来的旧值,并返回旧值.  
+        //如果存在相同的hash值,那么他们确定的索引位置就相同,这时判断他们的key是否相同,如果不相同,这时就是产生了我们常说的hash冲突.  
+        //Hash冲突后,那么HashMap的单个bucket里存储的不是一个 Entry,而是一个 Entry 链.  
+        //系统只能必须按顺序遍历每个Entry,直到找到想搜索的 Entry 为止——如果恰好要搜索的Entry位于该Entry链的最末端（该 Entry 是最早放入该 bucket 中） 
         if (e.hash == hash && ((k = e.key) == key || key.equals(k))) {  
             V oldValue = e.value;  
             e.value = value;  
@@ -285,13 +285,13 @@ public V put(K key, V value) {
 }  
 ```
 
-HashMap里面的bucket出现了单链表的形式，散列表要解决的一个问题就是散列值的冲突问题，通常是两种方法：链表法和开放地址法。链表法就是将相同hash值的对象组织成一个链表放在hash值对应的槽位；开放地址法是通过一个探测算法，当某个槽位已经被占据的情况下继续查找下一个可以使用的槽位。java.util.HashMap采用的链表法的方式，链表是单向链表。形成单链表的核心代码如下：
+HashMap里面的bucket出现了单链表的形式,散列表要解决的一个问题就是散列值的冲突问题,通常是两种方法：链表法和开放地址法.链表法就是将相同hash值的对象组织成一个链表放在hash值对应的槽位；开放地址法是通过一个探测算法,当某个槽位已经被占据的情况下继续查找下一个可以使用的槽位.java.util.HashMap采用的链表法的方式,链表是单向链表.形成单链表的核心代码如下：
 
 ``` java
 void addEntry(int hash, K key, V value, int bucketIndex) {
  // 如果 Map 中的 key-value 对的数量超过了极限
     if ((size >= threshold) && (null!=table[bucketIndex])){
-        // 把 table 对象的长度扩充到原来的2倍。 
+        // 把 table 对象的长度扩充到原来的2倍. 
         resize(2 * table.length);
         hash = (null != key) ? hash(key) : 0;
         bucketIndex = indexFor(hash, table.length);
@@ -302,35 +302,35 @@ void addEntry(int hash, K key, V value, int bucketIndex) {
 void createEntry(int hash, K key, V value, int bucketIndex) {
     // 根据bucketIndex 获取对应的 Entry  
     Entry<K,V> e = table[bucketIndex];
-    // 将新创建的 Entry 放入 bucketIndex 索引处，并让新的 Entry 指向原来的 Entry 
+    // 将新创建的 Entry 放入 bucketIndex 索引处,并让新的 Entry 指向原来的 Entry 
     table[bucketIndex] = new Entry<>(hash, key, value, e);
     size++;
 }
 ```
 
-上面方法的代码大家可以看出，系统总是将新添加的 Entry 对象放入 table 数组的 bucketIndex 索引处——如果 bucketIndex 索引处已经有了一个 Entry 对象，那新添加的 Entry 对象指向原有的 Entry 对象（产生一个 Entry 链），如果 bucketIndex 索引处没有 Entry 对象，也就是上面程序代码的 e 变量是 null，也就是新放入的 Entry 对象指向 null，也就是没有产生 Entry 链。 HashMap里面没有出现hash冲突时，没有形成单链表时，HashMap查找元素很快,get()方法能够直接定位到元素，但是出现单链表后，单个bucket 里存储的不是一个 Entry，而是一个 Entry 链，系统只能必须按顺序遍历每个 Entry，直到找到想搜索的 Entry 为止——如果恰好要搜索的 Entry 位于该 Entry 链的最末端（该 Entry 是最早放入该 bucket 中），那系统必须循环到最后才能找到该元素。
+上面方法的代码大家可以看出,系统总是将新添加的 Entry 对象放入 table 数组的 bucketIndex 索引处——如果 bucketIndex 索引处已经有了一个 Entry 对象,那新添加的 Entry 对象指向原有的 Entry 对象（产生一个 Entry 链）,如果 bucketIndex 索引处没有 Entry 对象,也就是上面程序代码的 e 变量是 null,也就是新放入的 Entry 对象指向 null,也就是没有产生 Entry 链. HashMap里面没有出现hash冲突时,没有形成单链表时,HashMap查找元素很快,get()方法能够直接定位到元素,但是出现单链表后,单个bucket 里存储的不是一个 Entry,而是一个 Entry 链,系统只能必须按顺序遍历每个 Entry,直到找到想搜索的 Entry 为止——如果恰好要搜索的 Entry 位于该 Entry 链的最末端（该 Entry 是最早放入该 bucket 中）,那系统必须循环到最后才能找到该元素.
 
 ## HashMap和HashTable区别
-> HashMap和HashTable采用的是相同的存储机制，因此两者的实现基本一致。
+> HashMap和HashTable采用的是相同的存储机制,因此两者的实现基本一致.
 
 **不同的是:**
 
-> HashMap可以key和value均可以为null，而HashTable则不可以。HashTable不允许null的值，HashTable的key为null的时候，HashTable调用put方法时，直接抛出NullPointerException。其它细微的差别还有，比如初始化Entry数组的大小等等。
-> HashTable是线程安全的，内部的方法基本都是synchronized。hashmap则不是线程安全的。
-> HashTable中的hash数组默认是11，增加方式old*2+1。hashmap中hash数组的默认大小是16，而且一定是2的指数
-> HashTable有一个contains(Object value)，功能和containsValue(Object value)功能一样
-> HashTable使用Enumeration，HashMap使用Iterator
+> HashMap可以key和value均可以为null,而HashTable则不可以.HashTable不允许null的值,HashTable的key为null的时候,HashTable调用put方法时,直接抛出NullPointerException.其它细微的差别还有,比如初始化Entry数组的大小等等.
+> HashTable是线程安全的,内部的方法基本都是synchronized.hashmap则不是线程安全的.
+> HashTable中的hash数组默认是11,增加方式old*2+1.hashmap中hash数组的默认大小是16,而且一定是2的指数
+> HashTable有一个contains(Object value),功能和containsValue(Object value)功能一样
+> HashTable使用Enumeration,HashMap使用Iterator
 
-**以上只是表面的不同，它们的实现也有很大的不同。**
-> HashTable中hash数组默认大小是11，增加的方式是 old*2+1。HashMap中hash数组的默认大小是16，而且一定是2的指数。
-> 哈希值的使用不同，HashTable直接使用对象的hashCode，代码是这样的:
+**以上只是表面的不同,它们的实现也有很大的不同.**
+> HashTable中hash数组默认大小是11,增加的方式是 old*2+1.HashMap中hash数组的默认大小是16,而且一定是2的指数.
+> 哈希值的使用不同,HashTable直接使用对象的hashCode,代码是这样的:
 
 ``` java
 int hash = key.hashCode();
 
 int index = (hash & 0x7FFFFFFF) % tab.length;
 
-而HashMap重新计算hash值，而且用与代替求模：
+而HashMap重新计算hash值,而且用与代替求模：
 
 int hash = hash(k);
 
